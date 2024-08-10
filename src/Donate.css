@@ -1,0 +1,217 @@
+.donate-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header-container,
+.donation-info-container,
+.donation-amount-container,
+.payment-gateway-container,
+.faq-section,
+.social-media-section {
+  margin-bottom: 30px;
+}
+
+.header-container .image-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.header-container .header-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.header-container .quote {
+  margin-top: 20px;
+  font-style: italic;
+  color: #757575;
+}
+
+.donation-info-container {
+  padding-bottom: 30px;
+}
+
+.donation-info-container .donation-grid {
+  margin-top: 20px;
+}
+
+.amount-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.amount-options .MuiButtonBase-root {
+  margin: 0 10px;
+}
+
+.donation-amount-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 30px;
+  padding-top: 10px;
+}
+
+.donation-grid .donation-icon {
+  font-size: 48px;
+  color: #ff7043;
+  margin-bottom: 10px;
+}
+
+.faq-item {
+  margin-bottom: 10px;
+}
+
+.payment-gateway-container .lock-icon {
+  margin-right: 5px;
+}
+
+.social-media-section .MuiIconButton-root {
+  color: #ff7043;
+}
+
+.encouragement-text {
+  margin-top: 20px;
+  color: #757575;
+}
+
+/* New styles for donation type section */
+.donation-type-container {
+  margin-bottom: 30px; /* Ensures space below the donation type section */
+}
+
+.donation-type-title {
+  margin-bottom: 20px; /* Adds space between the title and buttons */
+}
+
+.faq-section .faq-card {
+  margin-bottom: 10px;
+}
+
+.faq-section .faq-card.hovered {
+  background-color: #f5f5f5;
+}
+
+.social-media-section .social-media-icons {
+  display: flex;
+  gap: 10px;
+}
+/* Donate.css */
+
+.donate-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header-container,
+.donation-info-container,
+.donation-amount-container,
+.payment-gateway-container,
+.faq-section,
+.product-donation-container,
+.social-media-section {
+  margin-bottom: 30px;
+}
+
+.header-container .image-container {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.header-container .header-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.header-container .quote {
+  margin-top: 20px;
+  font-style: italic;
+  color: #757575;
+}
+
+.donation-info-container {
+  padding-bottom: 30px;
+}
+
+.donation-info-container .donation-grid {
+  margin-top: 20px;
+}
+
+.amount-options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.amount-options .MuiButtonBase-root {
+  margin: 0 10px;
+}
+
+.donation-amount-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 30px;
+  padding-top: 10px;
+}
+
+.donation-grid .donation-icon {
+  font-size: 48px;
+  color: #ff7043;
+  margin-bottom: 10px;
+}
+
+.faq-item {
+  margin-bottom: 10px;
+}
+
+.payment-gateway-container .lock-icon {
+  margin-right: 5px;
+}
+
+.social-media-icons .MuiIconButton-root {
+  color: #ff7043;
+}
+
+.encouragement-text {
+  margin-top: 20px;
+  color: #757575;
+}
+
+/* New styles */
+.donation-type-container {
+  margin-bottom: 30px;
+}
+
+.donation-type-container .MuiToggleButtonGroup-root {
+  display: flex;
+  justify-content: center;
+}
+
+.donation-type-container .MuiToggleButton-root {
+  background-color: #ff7043;
+  color: white;
+  margin: 0 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+.donation-type-container .Mui-selected {
+  background-color: #ff8a65;
+}
+
+.donation-type-container .MuiToggleButton-root:hover {
+  background-color: #ff8a65;
+}
+
+.donation-type-container .MuiToggleButton-root:not(.Mui-selected):hover {
+  background-color: #ff7043;
+}
+
+.donation-type-container .MuiToggleButtonGroup-grouped {
+  border-radius: 5px;
+}

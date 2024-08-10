@@ -1,0 +1,236 @@
+/* Container styles */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.seven h1 {
+  text-align: center;
+      font-size:30px; font-weight:300; color:#222; letter-spacing:1px;
+      text-transform: uppercase;
+  
+      display: grid;
+      grid-template-columns: 1fr max-content 1fr;
+      grid-template-rows: 27px 0;
+      grid-gap: 20px;
+      align-items: center;
+      font-family: 'Poppins';
+  }
+  
+  .seven h1:after,.seven h1:before {
+      content: " ";
+      display: block;
+      border-bottom: 1px solid #c50000;
+      border-top: 1px solid #c50000;
+      height: 5px;
+    background-color:#f8f8f8;
+  }
+.events-container {
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.events-container .divider {
+  margin: 20px 0;
+}
+.events-container, .events-container * {
+  font-family: 'Poppins', sans-serif !important;
+}
+
+
+.events-container .MuiCard-root {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.events-container .MuiCardMedia-root {
+  object-fit: cover;
+}
+
+.events-container .MuiCardContent-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center the content */
+  text-align: center; /* Center text */
+}
+
+.events-container .MuiTypography-h5 {
+  margin-bottom: 10px; /* Add shadow to the title */
+}
+
+.events-container .MuiTypography-body1 {
+  margin-bottom: 10px;
+}
+
+.events-container .MuiButton-root {
+  align-self: center; /* Center the button */
+}
+
+/* Modal styles */
+#event-modal-title {
+  margin-bottom: 10px;
+}
+
+#event-modal-description {
+  margin-bottom: 10px;
+}
+
+.event-indicator {
+  background-color: #ff7043;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 5px;
+  text-align: center;
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+.highlight {
+  background: #ff7043 !important;
+  color: white !important;
+  border-radius: 30%;
+}
+
+.react-calendar__tile--now {
+  background: #ffe0b2 !important;
+}
+
+.react-calendar__tile--highlight {
+  background: #ff7043 !important;
+  color: white !important;
+}
+
+.calendar-container {
+  width: 100%;
+}
+
+.volunteer-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.react-calendar {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Card hover effect */
+.events-container .MuiCard-root:hover {
+  transform: scale(1.05); /* Zoom effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+}
+
+.events-container .MuiCard-root .MuiCardMedia-root {
+  transition: transform 0.3s ease-in-out;
+}
+
+.events-container .MuiCard-root:hover .MuiCardMedia-root {
+  transform: scale(1.1); /* Zoom effect on image */
+}
+
+.events-container .MuiCard-root .MuiCardContent-root {
+  transition: opacity 0.3s ease;
+}
+
+.events-container .MuiCard-root:hover .MuiCardContent-root {
+  opacity: 0.8; /* Slight fade effect */
+}
+
+
+
+.wrapper {
+  display: flex;
+  width: 90%;
+  justify-content: space-around;
+}
+
+.card {
+  width: 280px;
+  height: 280px;
+  border-radius: 15px;
+  padding: 1.5rem;
+  background: white;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  transition: 0.4s ease-out;
+  box-shadow: 0px 7px 10px rgba(0, 0, 0, 0.5);
+}
+
+.card:hover {
+  transform: translateY(20px);
+}
+
+.card:hover:before {
+  opacity: 1;
+}
+
+.card:hover .info {
+  opacity: 1;
+  transform: translateY(0px);
+}
+
+.card:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2;
+  transition: 0.5s;
+  opacity: 0;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 15px;
+}
+
+.info {
+  position: relative;
+  z-index: 3;
+  color: white;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: 0.5s;
+}
+
+.info h1 {
+  margin: 0;
+}
+
+.info p {
+  letter-spacing: 1px;
+  font-size: 15px;
+  margin-top: 8px;
+}
+
+.info button {
+  padding: 0.6rem;
+  outline: none;
+  border: none;
+  border-radius: 3px;
+  background: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.4s ease;
+}
+
+.info button:hover {
+  background: #ff7043;
+  color: white;
+}

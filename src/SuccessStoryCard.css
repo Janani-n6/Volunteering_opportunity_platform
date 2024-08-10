@@ -1,0 +1,34 @@
+/* SuccessStoryCard.css */
+.success-story-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+  }
+  
+  .success-story-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .success-story-card-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .success-story-card-content {
+    padding: 16px;
+  }
+  
+  .success-story-card-content p {
+    margin: 0 0 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .success-story-card-content small {
+    display: block;
+    font-size: 0.875rem;
+    color: #777;
+  }
+  

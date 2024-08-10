@@ -1,0 +1,40 @@
+.dashboard-container {
+  margin-top: 20px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.section-title svg {
+  margin-right: 10px;
+}
+
+.detail-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  margin-right: 20px;
+}
+
+.chart-card {
+  padding: 20px;
+}
+
+.achievement-card,
+.goal-card,
+.badge-card {
+  text-align: center;
+  padding: 20px;
+}

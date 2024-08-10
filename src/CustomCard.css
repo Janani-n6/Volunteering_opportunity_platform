@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;800&display=swap');
+
+.snip1200 {
+  font-family: 'Raleway', Arial, sans-serif;
+  position: relative;
+  overflow: hidden;
+  margin: 10px;
+  max-width: 310px;
+  width: 100%;
+  background: #000000;
+  color: #ffffff;
+  text-align: center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  transition: all 0.45s ease-in-out;
+}
+
+.snip1200-img {
+  max-width: 100%;
+  opacity: 0.9;
+  transition: all 0.45s ease-in-out;
+}
+
+.snip1200-content {
+  position: absolute;
+  top: 45%;
+  left: 7%;
+  right: 7%;
+  bottom: 45%;
+  border: 1px solid white;
+  border-width: 1px 1px 0;
+  opacity: 0;
+  transition: all 0.45s ease-in-out;
+}
+
+.snip1200-heading {
+  overflow: hidden;
+  transform: translateY(50%);
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.snip1200-heading h5 {
+  display: table;
+  margin: 0 auto;
+  padding: 0 10px;
+  position: relative;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+
+.snip1200-heading h5 span {
+  font-weight: 800;
+}
+
+.snip1200-description {
+  top: 50%;
+  transform: translateY(-50%);
+  position: absolute;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0;
+  line-height: 1.6em;
+  font-size: 0.9em;
+}
+
+.snip1200:hover .snip1200-img {
+  opacity: 0.25;
+  transform: scale(1.1);
+}
+
+.snip1200:hover .snip1200-content {
+  top: 7%;
+  bottom: 7%;
+  opacity: 1;
+}

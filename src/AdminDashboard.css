@@ -1,0 +1,150 @@
+.admin-dashboard {
+    display: flex;
+  }
+  
+  .dashboard-content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .header-title {
+    flex: 1;
+  }
+  
+  .admin-profile {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+  }
+  
+  .admin-profile-image {
+    width: 30px; /* Reduced size */
+    height: 30px; /* Reduced size */
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .admin-profile-name {
+    font-weight: 600;
+    font-size: 12px; /* Reduced font size */
+    color: #263238;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header-actions .MuiIconButton-root {
+    margin-left: 10px;
+  }
+  
+  .card-container .MuiCard-root {
+    box-shadow: none;
+    border-radius: 8px;
+  }
+  
+  .chart-card {
+    box-shadow: none;
+  }
+  
+  .card-content {
+    padding: 16px;
+  }
+  
+  .card-content .MuiTypography-root {
+    font-size: 12px; /* Reduced font size */
+  }
+  
+  .card-actions .MuiTypography-root {
+    font-size: 10px; /* Reduced font size for card actions */
+  }
+  
+  .header-actions .MuiIconButton-root {
+    font-size: 18px; /* Adjust icon size if needed */
+  }
+  .sidebar {
+    width: 250px; /* Sidebar width */
+    background-color: #a39390; /* Consistent background color */
+    padding: 0; /* No padding */
+    height: 100vh; /* Ensures it covers full viewport height */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    position: fixed; /* Fixed position */
+    top: 0;
+    left: 0;
+    z-index: 1000; /* Ensures the sidebar is above other content */
+  }
+  
+  .sidebar-title {
+    margin: 20px 0 20px 20px; /* Title margin */
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  
+  .sidebar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-item {
+    margin: 10px 0;
+  }
+  
+  .sidebar-link {
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    font-size: 1em; /* Reduced font size */
+    display: flex;
+    align-items: center;
+    padding: 10px 20px; /* Add padding for clickable area */
+    border-radius: 4px; /* Rounded corners */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+  }
+  
+  .sidebar-link:hover {
+    background-color: #ac9797;
+  }
+  
+  .sidebar-icon {
+    margin-right: 10px;
+    font-size: 1.2em; /* Reduced icon size */
+  }
+  .sidebar-logo{
+    width: 100%;
+  }
+  /* Main content styles */
+  .main-content {
+    margin-left: 250px; /* Add space equal to the sidebar width */
+    padding: 20px; /* Optional: Add padding for content */
+    width: calc(100% - 250px); /* Adjust width to account for sidebar */
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+  }
+  .admin-dashboard .card-container {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .admin-dashboard .stat-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-dashboard .chart-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
