@@ -1,55 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Box, Typography, Grid, Card, CardContent, IconButton, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, TextField, Button, MenuItem, Select, Dialog, DialogActions, DialogContent, DialogTitle
+  Box, Typography, Grid, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, TextField, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton
 } from '@mui/material';
-import {
-  Search as SearchIcon, Edit as EditIcon, Visibility as ViewIcon, Delete as DeleteIcon,
-  Dashboard as DashboardIcon, Notifications as NotificationsIcon, ExitToApp as LogoutIcon
-} from '@mui/icons-material';
-import Sidebar from './Sidebar'; // Import Sidebar component
+import { Search as SearchIcon, Dashboard as DashboardIcon, Notifications as NotificationsIcon, ExitToApp as LogoutIcon } from '@mui/icons-material';
+import Sidebar from './Sidebar';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const VolunteerManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [selectedVolunteer, setSelectedVolunteer] = useState(null);
   const [hoursToAdd, setHoursToAdd] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [volunteers, setVolunteers] = useState([
-    { name: 'John Doe', email: 'john@example.com', phone: '123-456-7890', availability: 'Weekdays', interests: 'Teaching', skills: 'Communication', hours: 50, status: 'Active' },
-    // Add more volunteers here
-  ]);
+  const [volunteers, setVolunteers] = useState([]);
 
   const navigate = useNavigate();
 
-  const handleSearchChange = (event) => {
-    setSearchQuery(event.target.value);
-  };
+  // Fetch all volunteers on initial load
+  useEffect(() => {
+    fetchVolunteers();
+  }, []);
 
-  const handleStatusChange = (event) => {
-    setStatusFilter(event.target.value);
+  const fetchVolunteers = (query = '') => {
+    const url = query ? `http://localhost:9001/volunteers/search?name=${query}` : 'http://localhost:9001/volunteers/all';
+    axios.get(url)
+      .then(response => {
+        setVolunteers(response.data);
+      })
+      .catch(error => {
+        console.error("There was an error fetching the volunteers!", error);
+      });
+  };
+  
+
+  const handleSearchChange = (event) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+    fetchVolunteers(query);  // Fetch filtered volunteers based on search query
   };
 
   const handleViewDetails = (volunteer) => {
     setSelectedVolunteer(volunteer);
+    setDialogOpen(true);
   };
 
   const handleLogHours = () => {
     if (selectedVolunteer) {
-      setVolunteers(prevVolunteers => prevVolunteers.map(vol => {
-        if (vol.email === selectedVolunteer.email) {
-          return { ...vol, hours: vol.hours + parseInt(hoursToAdd, 10) };
-        }
-        return vol;
-      }));
-      setHoursToAdd('');
-      setDialogOpen(false);
+      const updatedVolunteer = {
+        ...selectedVolunteer,
+        hours: selectedVolunteer.hours + parseInt(hoursToAdd, 10)
+      };
+
+      axios.put('http://localhost:9001/volunteers/update', updatedVolunteer)
+        .then(response => {
+          setVolunteers(prevVolunteers => prevVolunteers.map(vol => vol.id === selectedVolunteer.id ? updatedVolunteer : vol));
+          setHoursToAdd('');
+          setDialogOpen(false);
+        })
+        .catch(error => {
+          console.error("There was an error logging hours for the volunteer!", error);
+        });
     }
   };
 
   const handleLogout = () => {
-    navigate('/'); // Redirect to the home page
+    navigate('/');
   };
 
   return (
@@ -87,19 +103,6 @@ const VolunteerManagement = () => {
                   }}
                 />
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Select
-                  fullWidth
-                  value={statusFilter}
-                  onChange={handleStatusChange}
-                  variant="outlined"
-                  size="small"
-                >
-                  <MenuItem value="All">All</MenuItem>
-                  <MenuItem value="Active">Active</MenuItem>
-                  <MenuItem value="Inactive">Inactive</MenuItem>
-                </Select>
-              </Grid>
             </Grid>
 
             <TableContainer>
@@ -113,77 +116,64 @@ const VolunteerManagement = () => {
                     <TableCell>Interests</TableCell>
                     <TableCell>Skills</TableCell>
                     <TableCell>Total Hours</TableCell>
-                    <TableCell>Status</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {volunteers
-                    .filter(volunteer =>
-                      volunteer.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-                      (statusFilter === 'All' || volunteer.status === statusFilter)
-                    )
-                    .map(volunteer => (
-                      <TableRow key={volunteer.email}>
-                        <TableCell>{volunteer.name}</TableCell>
-                        <TableCell>{volunteer.email}</TableCell>
-                        <TableCell>{volunteer.phone}</TableCell>
-                        <TableCell>{volunteer.availability}</TableCell>
-                        <TableCell>{volunteer.interests}</TableCell>
-                        <TableCell>{volunteer.skills}</TableCell>
-                        <TableCell>{volunteer.hours}</TableCell>
-                        <TableCell>{volunteer.status}</TableCell>
-                        <TableCell>
-                          <IconButton onClick={() => handleViewDetails(volunteer)}><ViewIcon /></IconButton>
-                          <IconButton><EditIcon /></IconButton>
-                          <IconButton><DeleteIcon /></IconButton>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                  {volunteers.map(volunteer => (
+                    <TableRow key={volunteer.id}>
+                      <TableCell>{volunteer.name}</TableCell>
+                      <TableCell>{volunteer.email}</TableCell>
+                      <TableCell>{volunteer.phone}</TableCell>
+                      <TableCell>{volunteer.availability}</TableCell>
+                      <TableCell>{volunteer.interests}</TableCell>
+                      <TableCell>{volunteer.skills}</TableCell>
+                      <TableCell>{volunteer.hours}</TableCell>
+                      <TableCell>
+                        <Button variant="contained" color="primary" onClick={() => handleViewDetails(volunteer)}>Log Hours</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
 
-            {selectedVolunteer && (
-              <Card style={{ marginTop: '20px' }}>
-                <CardContent>
-                  <Typography variant="h6">Volunteer Details</Typography>
-                  <Typography>Name: {selectedVolunteer.name}</Typography>
-                  <Typography>Email: {selectedVolunteer.email}</Typography>
-                  <Typography>Phone: {selectedVolunteer.phone}</Typography>
-                  <Typography>Availability: {selectedVolunteer.availability}</Typography>
-                  <Typography>Interests: {selectedVolunteer.interests}</Typography>
-                  <Typography>Skills: {selectedVolunteer.skills}</Typography>
-                  <Typography>Total Hours: {selectedVolunteer.hours}</Typography>
-                  <Button variant="contained" color="primary" onClick={() => setDialogOpen(true)}>Log Hours</Button>
-                </CardContent>
-              </Card>
-            )}
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+              <DialogTitle>Volunteer Details</DialogTitle>
+              <DialogContent>
+                {selectedVolunteer && (
+                  <Box>
+                    <Typography>Name: {selectedVolunteer.name}</Typography>
+                    <Typography>Email: {selectedVolunteer.email}</Typography>
+                    <Typography>Phone: {selectedVolunteer.phone}</Typography>
+                    <Typography>Availability: {selectedVolunteer.availability}</Typography>
+                    <Typography>Interests: {selectedVolunteer.interests}</Typography>
+                    <Typography>Skills: {selectedVolunteer.skills}</Typography>
+                    <Typography>Total Hours: {selectedVolunteer.hours}</Typography>
+                    <TextField
+                      autoFocus
+                      margin="dense"
+                      label="Hours to Add"
+                      type="number"
+                      fullWidth
+                      variant="outlined"
+                      value={hoursToAdd}
+                      onChange={(e) => setHoursToAdd(e.target.value)}
+                      style={{ marginTop: '20px' }}
+                    />
+                  </Box>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setDialogOpen(false)} color="primary">
+                  Cancel
+                </Button>
+                <Button onClick={handleLogHours} color="primary">
+                  Log Hours
+                </Button>
+              </DialogActions>
+            </Dialog>
           </Box>
-
-          <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-            <DialogTitle>Log Volunteer Hours</DialogTitle>
-            <DialogContent>
-              <TextField
-                autoFocus
-                margin="dense"
-                label="Hours to Add"
-                type="number"
-                fullWidth
-                variant="outlined"
-                value={hoursToAdd}
-                onChange={(e) => setHoursToAdd(e.target.value)}
-              />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setDialogOpen(false)} color="primary">
-                Cancel
-              </Button>
-              <Button onClick={handleLogHours} color="primary">
-                Log Hours
-              </Button>
-            </DialogActions>
-          </Dialog>
         </Box>
       </Box>
     </div>

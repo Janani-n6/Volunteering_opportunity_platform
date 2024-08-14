@@ -1,6 +1,5 @@
-import React, { useState, useMemo ,useContext} from 'react';
-import { Container, Grid, Card, CardContent, Typography, Button, CardMedia, TextField, InputLabel, MenuItem, FormControl, Select, Divider, Modal, Box } from '@mui/material';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import React, { useState, useMemo} from 'react';
+import { Container, Grid, Typography, Button, CardMedia, TextField, InputLabel, MenuItem, FormControl, Select, Divider, Modal, Box } from '@mui/material';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './Events.css'; // Ensure your custom CSS file is imported

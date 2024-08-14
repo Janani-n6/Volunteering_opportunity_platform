@@ -1,46 +1,38 @@
-import React, { useState } from 'react';
-import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, Select, MenuItem } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, Snackbar } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, ViewList as ViewListIcon, Search as SearchIcon, Dashboard as DashboardIcon, Notifications as NotificationsIcon, ExitToApp as LogoutIcon } from '@mui/icons-material';
 import Sidebar from './Sidebar'; // Adjust the import path as needed
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const EventManagement = () => {
-  const [events, setEvents] = useState([
-    {
-      title: 'Community Cleanup',
-      date: '2024-08-15',
-      location: 'Central Park',
-      description: 'A community event to clean up the local park. Requirements: gloves, trash bags.',
-      timings: { start: '09:00 AM', end: '01:00 PM' },
-      volunteers: ['John Doe', 'Jane Smith'],
-      status: 'Upcoming',
-      image: null
-    },
-    // Add more events here
-  ]);
+  const [events, setEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false); // State for edit dialog
   const [newEvent, setNewEvent] = useState({
     title: '',
     date: '',
     location: '',
     description: '',
-    timings: { start: '', end: '' },
-    volunteers: [],
-    status: 'Upcoming',
-    image: null
+    timings: '',
+    exactLocation: '',
+    requirements: '',
+    category: '',
   });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Fetch events from the backend
+    axios.get('http://localhost:9001/events')
+      .then(response => setEvents(response.data))
+      .catch(error => console.error('Error fetching events:', error));
+  }, []);
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
-  };
-
-  const handleStatusChange = (event) => {
-    setStatusFilter(event.target.value);
   };
 
   const handleViewDetails = (event) => {
@@ -54,28 +46,68 @@ const EventManagement = () => {
   };
 
   const handleAddEvent = () => {
-    setEvents([...events, newEvent]);
-    setAddDialogOpen(false);
-    setNewEvent({
-      title: '',
-      date: '',
-      location: '',
-      description: '',
-      timings: { start: '', end: '' },
-      volunteers: [],
-      status: 'Upcoming',
-      image: null
-    });
+    const formData = new FormData();
+    Object.entries(newEvent).forEach(([key, value]) => formData.append(key, value));
+
+    axios.post('http://localhost:9001/events/add', formData)
+      .then(response => {
+        setEvents([...events, response.data]);
+        setAddDialogOpen(false);
+        setNewEvent({
+          title: '',
+          date: '',
+          location: '',
+          description: '',
+          timings: '',
+          exactLocation: '',
+          requirements: '',
+          category: '',
+        });
+      })
+      .catch(error => console.error('Error adding event:', error));
+  };
+
+  const handleEditEvent = (event) => {
+    setSelectedEvent(event);
+    setNewEvent(event);
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEditEvent = () => {
+    // Make sure the selectedEvent is defined
+    if (!selectedEvent) {
+      console.error('No event selected for editing.');
+      return;
+    }
+  
+    // Prepare the updated event object
+    const updatedEvent = { ...selectedEvent, ...newEvent };
+  
+    axios.put(`http://localhost:9001/events/${selectedEvent.id}`, updatedEvent)
+      .then(response => {
+        // Update the events list with the edited event
+        setEvents(events.map(event => event.id === selectedEvent.id ? response.data : event));
+        setEditDialogOpen(false);
+        setSelectedEvent(null);
+      })
+      .catch(error => {
+        console.error('Error updating event:', error);
+        // Optionally, you can add an error message to the UI
+      });
+  };
+  
+
+  const handleDeleteEvent = (id) => {
+    axios.delete(`http://localhost:9001/events/${id}`)
+      .then(() => {
+        setEvents(events.filter(event => event.id !== id));
+      })
+      .catch(error => console.error('Error deleting event:', error));
   };
 
   const handleLogout = () => {
     // Perform logout logic here if needed (e.g., clearing tokens)
     navigate('/'); // Redirect to the home page
-  };
-
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    setNewEvent({ ...newEvent, image: file });
   };
 
   return (
@@ -96,7 +128,7 @@ const EventManagement = () => {
             </IconButton>
           </div>
         </header>
-        
+
         <Box padding={3}>
           <Button 
             variant="contained" 
@@ -122,19 +154,6 @@ const EventManagement = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Select
-                fullWidth
-                value={statusFilter}
-                onChange={handleStatusChange}
-                variant="outlined"
-                size="small"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Upcoming">Upcoming</MenuItem>
-                <MenuItem value="Past">Past</MenuItem>
-              </Select>
-            </Grid>
           </Grid>
 
           <TableContainer>
@@ -151,18 +170,18 @@ const EventManagement = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {events.filter(event => event.title.includes(searchQuery) && (statusFilter === 'All' || event.status === statusFilter)).map((event, index) => (
+                {events.filter(event => event.title.includes(searchQuery)).map((event, index) => (
                   <TableRow key={index}>
                     <TableCell>{event.title}</TableCell>
                     <TableCell>{event.date}</TableCell>
                     <TableCell>{event.location}</TableCell>
                     <TableCell>{event.description}</TableCell>
-                    <TableCell>{event.timings.start} - {event.timings.end}</TableCell>
-                    <TableCell>{event.volunteers.join(', ')}</TableCell>
+                    <TableCell>{event.timings}</TableCell>
+                    <TableCell>{event.volunteers ? event.volunteers.map(v => v.name).join(', ') : 'None'}</TableCell>
                     <TableCell>
                       <IconButton onClick={() => handleViewDetails(event)}><ViewListIcon /></IconButton>
-                      <IconButton><EditIcon /></IconButton>
-                      <IconButton><DeleteIcon /></IconButton>
+                      <IconButton onClick={() => handleEditEvent(event)}><EditIcon /></IconButton>
+                      <IconButton onClick={() => handleDeleteEvent(event.id)}><DeleteIcon /></IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -180,15 +199,8 @@ const EventManagement = () => {
                   <Typography>Date: {selectedEvent.date}</Typography>
                   <Typography>Location: {selectedEvent.location}</Typography>
                   <Typography>Description: {selectedEvent.description}</Typography>
-                  <Typography>Timings: {selectedEvent.timings.start} - {selectedEvent.timings.end}</Typography>
-                  <Typography>Volunteers: {selectedEvent.volunteers.join(', ')}</Typography>
-                  {selectedEvent.image && (
-                    <img
-                      src={URL.createObjectURL(selectedEvent.image)}
-                      alt={selectedEvent.title}
-                      style={{ width: '100%', height: 'auto', marginTop: '20px' }}
-                    />
-                  )}
+                  <Typography>Timings: {selectedEvent.timings}</Typography>
+                  <Typography>Volunteers: {selectedEvent.volunteers ? selectedEvent.volunteers.map(v => v.name).join(', ') : 'None'}</Typography>
                 </>
               )}
             </DialogContent>
@@ -234,42 +246,133 @@ const EventManagement = () => {
                 label="Description"
                 margin="normal"
                 variant="outlined"
+                multiline
+                rows={4}
                 value={newEvent.description}
                 onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
               />
               <TextField
                 fullWidth
-                label="Start Time"
+                label="Timings"
                 margin="normal"
                 variant="outlined"
-                type="time"
-                InputLabelProps={{ shrink: true }}
-                value={newEvent.timings.start}
-                onChange={(e) => setNewEvent({ ...newEvent, timings: { ...newEvent.timings, start: e.target.value } })}
+                value={newEvent.timings}
+                onChange={(e) => setNewEvent({ ...newEvent, timings: e.target.value })}
               />
               <TextField
                 fullWidth
-                label="End Time"
+                label="Exact Location"
                 margin="normal"
                 variant="outlined"
-                type="time"
-                InputLabelProps={{ shrink: true }}
-                value={newEvent.timings.end}
-                onChange={(e) => setNewEvent({ ...newEvent, timings: { ...newEvent.timings, end: e.target.value } })}
+                value={newEvent.exactLocation}
+                onChange={(e) => setNewEvent({ ...newEvent, exactLocation: e.target.value })}
               />
-              <input
-                accept="image/*"
-                type="file"
-                onChange={handleImageChange}
-                style={{ marginTop: '20px' }}
+              <TextField
+                fullWidth
+                label="Requirements"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.requirements}
+                onChange={(e) => setNewEvent({ ...newEvent, requirements: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Category"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.category}
+                onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setAddDialogOpen(false)} color="primary">
+              <Button onClick={() => setAddDialogOpen(false)} color="secondary">
                 Cancel
               </Button>
               <Button onClick={handleAddEvent} color="primary">
-                Add
+                Save
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Dialog for editing an event */}
+          <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
+            <DialogTitle>Edit Event</DialogTitle>
+            <DialogContent>
+              <TextField
+                fullWidth
+                label="Title"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.title}
+                onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Date"
+                margin="normal"
+                variant="outlined"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.date}
+                onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Location"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.location}
+                onChange={(e) => setNewEvent({ ...newEvent, location: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Description"
+                margin="normal"
+                variant="outlined"
+                multiline
+                rows={4}
+                value={newEvent.description}
+                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Timings"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.timings}
+                onChange={(e) => setNewEvent({ ...newEvent, timings: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Exact Location"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.exactLocation}
+                onChange={(e) => setNewEvent({ ...newEvent, exactLocation: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Requirements"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.requirements}
+                onChange={(e) => setNewEvent({ ...newEvent, requirements: e.target.value })}
+              />
+              <TextField
+                fullWidth
+                label="Category"
+                margin="normal"
+                variant="outlined"
+                value={newEvent.category}
+                onChange={(e) => setNewEvent({ ...newEvent, category: e.target.value })}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setEditDialogOpen(false)} color="secondary">
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEditEvent} color="primary">
+                Save
               </Button>
             </DialogActions>
           </Dialog>

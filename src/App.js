@@ -21,7 +21,7 @@ import ReviewManagement from './ReviewManagement';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
-
+  const volunteerId = userData ? userData.volunteerId : null;
   return (
     <div className="App">
       <Router>
@@ -31,9 +31,9 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} setUserData={setUserData} />} />
             <Route path="/register" element={<SignUp />} />
-            <Route path="/events" element={<Events isLoggedIn={isLoggedIn} />} />
+            <Route path="/events" element={<Events isLoggedIn={isLoggedIn} volunteerId={volunteerId}/>} />
             <Route path="/organization" element={<Organization />} />
-            <Route path="/donate" element={<Donate />} />
+            <Route path="/donate" element={<Donate userData={userData} />} />
             <Route path="/contact" element={<ContactUs isLoggedIn={isLoggedIn}/>} />
             <Route path="/profile" element={<div></div>} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -42,7 +42,7 @@ function App() {
             <Route path="/admin/donate" element={<DonateManagement/>} />
             <Route path="/admin/feedback" element={<FeedbackManagement/>} />
             <Route path="/admin/review" element={<ReviewManagement/>} />
-            <Route path="/volunteer/dashboard" element={<VolunteerDashboard />} />
+            <Route path="/volunteer/dashboard" element={<VolunteerDashboard userData={userData} />} />
           </Routes>
         </div>
         <FooterContainer />

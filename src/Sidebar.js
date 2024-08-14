@@ -5,7 +5,6 @@ import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
 import EventIcon from '@mui/icons-material/Event';
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
 import StarIcon from '@mui/icons-material/Star';
-import SettingsIcon from '@mui/icons-material/Settings';
 import RateReviewIcon from '@mui/icons-material/RateReview'; // Import the review icon
 import './sidebar.css';
 
@@ -49,7 +48,7 @@ const Sidebar = ({ adminData }) => {
         <li className="sidebar-item">
           <Link to="/admin/review" className="sidebar-link">
             <RateReviewIcon className="sidebar-icon" /> {/* New Review Icon */}
-            Review
+            Appreciation
           </Link>
         </li>
         

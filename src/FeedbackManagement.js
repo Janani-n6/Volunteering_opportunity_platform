@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, IconButton, Button,
-  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid, Select, MenuItem
+  Dialog, DialogActions, DialogContent, DialogTitle, TextField, Grid
 } from '@mui/material';
 import {
-  Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, ViewList as ViewListIcon,
+  ViewList as ViewListIcon,
   Search as SearchIcon, Dashboard as DashboardIcon, Notifications as NotificationsIcon,
   ExitToApp as LogoutIcon
 } from '@mui/icons-material';
@@ -13,27 +14,27 @@ import Sidebar from './Sidebar'; // Adjust the import path as needed
 import './AdminDashboard.css'; // Make sure to use the same CSS file for consistency
 
 const FeedbackManagement = () => {
-  const [feedbacks, setFeedbacks] = useState([
-    {
-      feedback: 'Great event, well organized!',
-      volunteerName: 'John Doe',
-      rating: 5,
-      status: 'Visible'
-    },
-    // Add more feedbacks here
-  ]);
+  const [feedbacks, setFeedbacks] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('All');
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await axios.get('http://localhost:9001/feedbacks/all');
+        setFeedbacks(response.data);
+      } catch (error) {
+        console.error('Error fetching feedbacks:', error);
+      }
+    };
+
+    fetchFeedbacks();
+  }, []);
+
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
-  };
-
-  const handleStatusChange = (event) => {
-    setStatusFilter(event.target.value);
   };
 
   const handleViewDetails = (feedback) => {
@@ -85,19 +86,6 @@ const FeedbackManagement = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12} md={6}>
-              <Select
-                fullWidth
-                value={statusFilter}
-                onChange={handleStatusChange}
-                variant="outlined"
-                size="small"
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="Visible">Visible</MenuItem>
-                <MenuItem value="Hidden">Hidden</MenuItem>
-              </Select>
-            </Grid>
           </Grid>
 
           <TableContainer>
@@ -106,22 +94,20 @@ const FeedbackManagement = () => {
                 <TableRow>
                   <TableCell>Feedback</TableCell>
                   <TableCell>Volunteer Name</TableCell>
+                  <TableCell>Email</TableCell>
                   <TableCell>Rating</TableCell>
-                  <TableCell>Status</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {feedbacks.filter(feedback => feedback.feedback.includes(searchQuery) && (statusFilter === 'All' || feedback.status === statusFilter)).map((feedback, index) => (
+                {feedbacks.filter(feedback => feedback.feedback.includes(searchQuery)).map((feedback, index) => (
                   <TableRow key={index}>
                     <TableCell>{feedback.feedback}</TableCell>
-                    <TableCell>{feedback.volunteerName}</TableCell>
+                    <TableCell>{feedback.name}</TableCell>
+                    <TableCell>{feedback.email}</TableCell>
                     <TableCell>{feedback.rating}</TableCell>
-                    <TableCell>{feedback.status}</TableCell>
                     <TableCell>
                       <IconButton onClick={() => handleViewDetails(feedback)}><ViewListIcon /></IconButton>
-                      <IconButton><EditIcon /></IconButton>
-                      <IconButton><DeleteIcon /></IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -136,9 +122,9 @@ const FeedbackManagement = () => {
               {selectedFeedback && (
                 <>
                   <Typography variant="h6">Feedback: {selectedFeedback.feedback}</Typography>
-                  <Typography>Volunteer Name: {selectedFeedback.volunteerName}</Typography>
+                  <Typography>Volunteer Name: {selectedFeedback.name}</Typography>
+                  <Typography>Volunteer Email: {selectedFeedback.email}</Typography>
                   <Typography>Rating: {selectedFeedback.rating}</Typography>
-                  <Typography>Status: {selectedFeedback.status}</Typography>
                 </>
               )}
             </DialogContent>

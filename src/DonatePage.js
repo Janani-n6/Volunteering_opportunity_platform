@@ -19,14 +19,11 @@ const DonateButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const Donate = () => {
+const Donate = ({ userData }) => { // Receive userData as a prop
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('creditCard');
-  const [donationType, setDonationType] = useState('money'); // State for donation type
-  const [productDetails, setProductDetails] = useState({
-    type: '',
-    address: '',
-  });
+  const [donationType, setDonationType] = useState('money');
+  const [productDetails, setProductDetails] = useState({ type: '', address: '' });
 
   const handleAmountChange = (e) => {
     setAmount(e.target.value);
@@ -56,7 +53,6 @@ const Donate = () => {
       return false;
     }
     if (paymentMethod === 'creditCard' || paymentMethod === 'debitCard') {
-      // Check for credit card/debit card details
       const cardNumber = document.querySelector('input[placeholder="Card Number"]').value;
       const expiryDate = document.querySelector('input[placeholder="Expiry Date"]').value;
       const cvv = document.querySelector('input[placeholder="CVV"]').value;
@@ -76,7 +72,7 @@ const Donate = () => {
     return true;
   };
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     let isValid = false;
     if (donationType === 'money') {
       isValid = validateMoneyDonation();
@@ -85,11 +81,36 @@ const Donate = () => {
     }
 
     if (isValid) {
-      // Payment gateway integration code
-      console.log(`Processing payment of ₹${amount} using ${paymentMethod}`);
-      toast.success('Donation processed successfully!');
+      const donationData = {
+        amount: donationType === 'money' ? amount : null,
+        donationType,
+        paymentMethod,
+        productType: donationType === 'products' ? productDetails.type : null,
+        address: donationType === 'products' ? productDetails.address : null,
+        donarname: userData.name, // Include the user name from userData
+      };
+
+      try {
+        const response = await fetch('http://localhost:9001/donate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(donationData),
+        });
+
+        if (response.ok) {
+          toast.success('Donation processed successfully!');
+        } else {
+          toast.error('Error processing donation.');
+        }
+      } catch (error) {
+        toast.error('Error processing donation.');
+      }
     }
   };
+  
+  
 
   const [hoveredFAQ, setHoveredFAQ] = useState(null);
 
@@ -115,7 +136,9 @@ const Donate = () => {
       answer: 'You will receive a receipt via email after your donation is processed.',
     },
   ];
-
+  const toggleFAQ = (index) => {
+    setHoveredFAQ((prevHoveredFAQ) => (prevHoveredFAQ === index ? null : index));
+  };
   return (
     <Container className="donate-page">
       <ToastContainer /> {/* Toast container for displaying toasts */}

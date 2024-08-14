@@ -40,41 +40,44 @@ const Login = ({ setIsLoggedIn, setUserData }) => {
     e.preventDefault();
     let valid = true;
     const { email, password } = formData;
-
+  
     // Reset errors
     setErrors({
       emailError: '',
       passwordError: '',
     });
-
+  
     if (!email) {
       setErrors((prevState) => ({ ...prevState, emailError: 'Email is required.' }));
       valid = false;
     }
-
+  
     if (!password) {
       setErrors((prevState) => ({ ...prevState, passwordError: 'Password is required.' }));
       valid = false;
     }
-
+  
     if (!termsAccepted) {
       setTermsError('You must accept the terms and conditions.');
       valid = false;
     } else {
       setTermsError('');
     }
-
+  
     if (valid) {
       try {
         const response = await axios.post('http://localhost:9001/login', formData);
         const userData = response.data;
         if (userData) {
+          // Store user data including ID in localStorage
+          localStorage.setItem('user', JSON.stringify(userData));
+  
           setUserData({
             profileImage: 'https://static.thenounproject.com/png/2265555-200.png',
             name: userData.username,
           });
           setIsLoggedIn(true);
-
+  
           const isUserAdmin = userData.email.includes('.admin');
           setIsAdmin(isUserAdmin); // Update the admin status
           
@@ -92,6 +95,7 @@ const Login = ({ setIsLoggedIn, setUserData }) => {
       }
     }
   };
+  
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';

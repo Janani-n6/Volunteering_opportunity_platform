@@ -1,19 +1,19 @@
-import React from 'react';
-import { Container, Grid, Card, CardContent, Typography, Avatar, Box, IconButton } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Container, Grid, Card, CardContent, Typography, Avatar, Box, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import StarIcon from '@mui/icons-material/Star';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import TrackChangesIcon from '@mui/icons-material/TrackChanges';
-import BadgeIcon from '@mui/icons-material/Badge';
 import Chart from 'react-apexcharts';
 import './VolunteerDashboard.css';
+import axios from 'axios';
 
-const VolunteerDashboard = () => {
-    const volunteer = {
-        name: "Janani",
-        skills: ["Fundraising", "Event Planning", "Community Outreach"],
-        interests: ["Environmental Protection", "Animal Welfare"],
-        hours: 120,
+const VolunteerDashboard = ({ userData }) => {
+    const [volunteer, setVolunteer] = useState({
+        name: "",
+        skills: "",
+        interests: "",
+        hours: 0,
         achievements: [
             {
                 title: "Top Volunteer of the Month",
@@ -50,6 +50,61 @@ const VolunteerDashboard = () => {
                 icon: <StarIcon sx={{ fontSize: 60, color: 'silver' }} />
             }
         ]
+    });
+
+    const [openDialog, setOpenDialog] = useState(false);
+    const [editFields, setEditFields] = useState({
+        name: "",
+        skills: "",
+        interests: ""
+    });
+
+    useEffect(() => {
+        if (userData && userData.name) {
+            axios.get(`http://localhost:9001/volunteers/search?name=${userData.name}`)
+                .then(response => {
+                    const { name, skills, interests } = response.data[0]; // Assuming response data is an array
+                    setVolunteer(prevState => ({
+                        ...prevState,
+                        name,
+                        skills,
+                        interests
+                    }));
+                })
+                .catch(error => {
+                    console.error("There was an error fetching the volunteer data!", error);
+                });
+        }
+    }, [userData]);
+
+    const handleUpdate = () => {
+        const url = `http://localhost:9001/volunteers/update/${volunteer.id}`;
+        const payload = {
+            name: editFields.name,
+            skills: editFields.skills,
+            interests: editFields.interests
+        };
+
+        axios.patch(url, payload)
+            .then(response => {
+                setVolunteer(prevState => ({
+                    ...prevState,
+                    ...response.data
+                }));
+                setOpenDialog(false);
+            })
+            .catch(error => {
+                console.error("There was an error updating the volunteer data!", error);
+            });
+    };
+
+    const openEditDialog = () => {
+        setEditFields({
+            name: volunteer.name,
+            skills: volunteer.skills,
+            interests: volunteer.interests
+        });
+        setOpenDialog(true);
     };
 
     const chartOptions = {
@@ -63,7 +118,7 @@ const VolunteerDashboard = () => {
         xaxis: {
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
         },
-        colors: ['#ff7043'] // Setting the bar color
+        colors: ['#ff7043']
     };
 
     return (
@@ -72,12 +127,52 @@ const VolunteerDashboard = () => {
                 <Card className="detail-card">
                     <CardContent>
                         <Avatar alt={volunteer.name} src="/static/images/avatar/1.jpg" className="avatar" />
-                        <Typography variant="h5">{volunteer.name}</Typography>
-                        <Typography variant="body1"><strong>Skills:</strong> {volunteer.skills.join(", ")}</Typography>
-                        <Typography variant="body1"><strong>Interests:</strong> {volunteer.interests.join(", ")}</Typography>
+                        <Typography variant="h6">{volunteer.name}</Typography>
+                        <Typography variant="body1">
+                            <strong>Skills:</strong> {volunteer.skills}
+                        </Typography>
+                        <Typography variant="body1">
+                            <strong>Interests:</strong> {volunteer.interests}
+                        </Typography>
+                        <Button onClick={openEditDialog} variant="outlined" sx={{ marginTop: 2 }}>Edit Profile</Button>
                     </CardContent>
                 </Card>
             </Box>
+
+            <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+                <DialogTitle>Edit Profile</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Name"
+                        variant="outlined"
+                        value={editFields.name}
+                        onChange={(e) => setEditFields({ ...editFields, name: e.target.value })}
+                    />
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Skills"
+                        variant="outlined"
+                        value={editFields.skills}
+                        onChange={(e) => setEditFields({ ...editFields, skills: e.target.value })}
+                    />
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Interests"
+                        variant="outlined"
+                        value={editFields.interests}
+                        onChange={(e) => setEditFields({ ...editFields, interests: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+                    <Button onClick={handleUpdate} variant="contained">Save</Button>
+                </DialogActions>
+            </Dialog>
+
             <Box className="section">
                 <Card className="chart-card">
                     <CardContent>
@@ -97,7 +192,7 @@ const VolunteerDashboard = () => {
                         <Grid item xs={12} sm={6} key={index}>
                             <Card className="achievement-card">
                                 <CardContent>
-                                    <IconButton>{achievement.icon}</IconButton>
+                                    {achievement.icon}
                                     <Typography variant="h6">{achievement.title}</Typography>
                                     <Typography variant="body1">{achievement.description}</Typography>
                                 </CardContent>
@@ -115,7 +210,7 @@ const VolunteerDashboard = () => {
                         <Grid item xs={12} sm={6} key={index}>
                             <Card className="goal-card">
                                 <CardContent>
-                                    <IconButton>{goal.icon}</IconButton>
+                                    {goal.icon}
                                     <Typography variant="h6">{goal.title}</Typography>
                                     <Typography variant="body1">{goal.description}</Typography>
                                 </CardContent>
@@ -133,7 +228,7 @@ const VolunteerDashboard = () => {
                         <Grid item xs={12} sm={6} key={index}>
                             <Card className="badge-card">
                                 <CardContent>
-                                    <IconButton>{badge.icon}</IconButton>
+                                    {badge.icon}
                                     <Typography variant="h6">{badge.title}</Typography>
                                     <Typography variant="body1">{badge.description}</Typography>
                                 </CardContent>
